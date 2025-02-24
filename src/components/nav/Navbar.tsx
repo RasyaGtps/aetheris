@@ -9,13 +9,13 @@ export default function Navbar() {
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
               <Image 
-                src="/aetheris.png" 
+                src="/aetheriss.png" 
                 alt="Aetheris Logo"
                 width={32}
                 height={32}
                 className="rounded-full"
               />
-              <span className="text-white font-bold text-xl">Aetheris</span>
+              <span className="text-white font-bold text-xl font-heebo uppercase">AETHERIS</span>
             </Link>
           </div>
 

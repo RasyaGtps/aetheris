@@ -9,7 +9,7 @@ const heebo = Heebo({
 });
 
 export const metadata: Metadata = {
-  title: "Aetheris",
+  title: "AETHERIS",
   description: "Anime",
   icons: {
     icon: '/aetheriss.png',
