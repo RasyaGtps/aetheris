@@ -10,6 +10,7 @@ import {
   faBars,
   faDragon
 } from "@fortawesome/free-solid-svg-icons";
+import Navbar from "@/components/nav/Navbar";
 
 // Tipe data untuk anime
 interface Anime {
@@ -69,44 +70,12 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-900">
-      {/* Navbar */}
-      <nav className="bg-gray-800 fixed w-full z-10 top-0">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center">
-              <FontAwesomeIcon icon={faDragon} className="text-blue-500 text-2xl mr-2" />
-              <span className="text-white font-bold text-xl">Aetheris</span>
-            </div>
-            
-            <div className="hidden md:block">
-              <div className="flex items-center space-x-4">
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="Cari anime..."
-                    className="bg-gray-700 text-white px-4 py-2 rounded-full pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  <FontAwesomeIcon 
-                    icon={faSearch} 
-                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                  />
-                </div>
-              </div>
-            </div>
-            
-            <div className="md:hidden">
-              <button className="text-gray-400 hover:text-white">
-                <FontAwesomeIcon icon={faBars} />
-              </button>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Main Content */}
       <div className="pt-24 px-4 md:px-8 pb-8">
         <h1 className="text-3xl font-bold text-center mb-12 bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
-          Anime Musim Ini
+          Current Season Anime
         </h1>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
