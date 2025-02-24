@@ -1,6 +1,5 @@
 import Link from "next/link";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDragon } from "@fortawesome/free-solid-svg-icons";
+import Image from "next/image";
 
 export default function Navbar() {
   return (
@@ -9,9 +8,12 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
-              <FontAwesomeIcon 
-                icon={faDragon} 
-                className="text-blue-500 text-2xl" 
+              <Image 
+                src="/aetheris.png" 
+                alt="Aetheris Logo"
+                width={32}
+                height={32}
+                className="rounded-full"
               />
               <span className="text-white font-bold text-xl">Aetheris</span>
             </Link>
