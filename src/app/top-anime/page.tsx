@@ -1,90 +1,116 @@
-'use client'
+"use client";
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStar } from "@fortawesome/free-solid-svg-icons";
+import { 
+  faStar, 
+  faPlay,
+  faCalendar,
+  faClock 
+} from "@fortawesome/free-solid-svg-icons";
 import Navbar from "@/components/nav/Navbar";
-import TopAnimeNav from "@/components/nav/TopAnimeNav";
-import LoadingSpinner from "@/components/loading/LoadingSpinner";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import AnimeList from "@/components/AnimeList";
+import HeaderMenu from "@/components/Utilities/HeaderMenu";
+import { ThreeDots } from "react-loading-indicators";
 
 interface Anime {
   mal_id: number;
   title: string;
-  title_english: string | null;
   images: {
-    jpg: {
+    webp: {
+      image_url: string;
       large_image_url: string;
-    }
+    };
   };
   score: number;
+  genres: {
+    mal_id: number;
+    name: string;
+  }[];
   episodes: number;
   duration: string;
-  genres: {
-    name: string;
-    mal_id: number;
-  }[];
+  aired: {
+    string: string;
+  };
 }
 
-export default function TopAnimePage() {
+export default function TopAnime() {
   const [animes, setAnimes] = useState<Anime[]>([]);
+  const [activeTab, setActiveTab] = useState("all");
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetch('https://api.jikan.moe/v4/top/anime')
-      .then(res => res.json())
-      .then(data => {
-        setAnimes(data.data);
-        setLoading(false);
-      });
-  }, []);
+  const tabs = [
+    { id: "all", name: "All", endpoint: "top/anime" },
+    { id: "upcoming", name: "Upcoming", endpoint: "seasons/upcoming" },
+    { id: "airing", name: "Airing", endpoint: "top/anime?filter=airing" },
+    { id: "movie", name: "Movie", endpoint: "top/anime?type=movie" },
+    { id: "tv", name: "TV Series", endpoint: "top/anime?type=tv" },
+  ];
 
-  if (loading) {
-    return <LoadingSpinner />;
-  }
+  const fetchAnimes = async (endpoint: string) => {
+    try {
+      setLoading(true);
+      const response = await fetch(`https://api.jikan.moe/v4/${endpoint}`);
+      const data = await response.json();
+      
+      const seenIds = new Set();
+      const uniqueAnimes = data.data.filter((anime: Anime) => {
+        if (!seenIds.has(anime.mal_id)) {
+          seenIds.add(anime.mal_id);
+          return true;
+        }
+        return false;
+      });
+      
+      setAnimes(uniqueAnimes);
+    } catch (error) {
+      console.error("Error fetching anime:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const currentTab = tabs.find(tab => tab.id === activeTab);
+    if (currentTab) {
+      fetchAnimes(currentTab.endpoint);
+    }
+  }, [activeTab]);
 
   return (
     <div className="min-h-screen bg-gray-900">
       <Navbar />
-
       <div className="pt-24 px-4 md:px-8 pb-8">
-        <h1 className="text-3xl font-bold text-white mb-8">Top Anime</h1>
-        
-        <TopAnimeNav />
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
-          {animes.map(anime => (
-            <div key={anime.mal_id} className="bg-gray-800 rounded-lg overflow-hidden transform hover:scale-105 transition duration-300">
-              <div className="relative aspect-[3/4]">
-                <img 
-                  src={anime.images.jpg.large_image_url} 
-                  alt={anime.title_english || anime.title}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                />
-                <div className="absolute top-0 right-0 bg-blue-600 px-2 py-1 m-1 rounded-full flex items-center gap-1 text-xs">
-                  <FontAwesomeIcon icon={faStar} className="text-yellow-400" />
-                  <span>{anime.score || "N/A"}</span>
-                </div>
-              </div>
-
-              <div className="p-3">
-                <h2 className="text-sm font-bold mb-2 line-clamp-2 text-white">
-                  {anime.title_english || anime.title}
-                </h2>
-                
-                <div className="flex flex-wrap gap-1 mb-3">
-                  {anime.genres.slice(0, 2).map(genre => (
-                    <span 
-                      key={genre.mal_id}
-                      className="text-[10px] px-2 py-0.5 bg-blue-600 text-white rounded-full"
-                    >
-                      {genre.name}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
+        {/* Navigation */}
+        <div className="flex gap-2 mb-8">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`px-4 py-2 rounded-lg ${
+                activeTab === tab.id
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+              }`}
+            >
+              {tab.name}
+            </button>
           ))}
         </div>
+
+        {loading ? (
+          <div className="flex justify-center items-center min-h-[50vh]">
+            <ThreeDots
+              color="#3b82f6"
+              size="large"
+              text=""
+              textColor=""
+            />
+          </div>
+        ) : (
+          <AnimeList api={animes} />
+        )}
       </div>
     </div>
   );

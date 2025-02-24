@@ -189,24 +189,35 @@ export default function AnimeDetail() {
             </h1>
             <h2 className="text-lg text-gray-400 mb-4">{animeDetail.title_japanese}</h2>
             
+            {/* Anime Stats */}
             <div className="flex flex-wrap items-center gap-6 mb-6">
-              <div className="flex items-center gap-2">
-                <FontAwesomeIcon icon={faStar} className="text-yellow-400" />
-                <span className="text-white text-xl font-bold">{animeDetail.score}</span>
-                <span className="text-gray-400">({animeDetail.scored_by.toLocaleString()} users)</span>
-              </div>
-              <div className="flex items-center gap-2 text-gray-300">
-                <FontAwesomeIcon icon={faRankingStar} />
-                <span>Rank #{animeDetail.rank}</span>
-              </div>
-              <div className="flex items-center gap-2 text-gray-300">
-                <FontAwesomeIcon icon={faUsers} />
-                <span>{animeDetail.members.toLocaleString()} members</span>
-              </div>
-              <div className="flex items-center gap-2 text-gray-300">
-                <FontAwesomeIcon icon={faHeart} className="text-red-500" />
-                <span>{animeDetail.favorites.toLocaleString()} favorites</span>
-              </div>
+              {animeDetail.score && (
+                <div className="flex items-center gap-2">
+                  <FontAwesomeIcon icon={faStar} className="text-yellow-400" />
+                  <span className="text-white text-xl font-bold">{animeDetail.score}</span>
+                  {animeDetail.scored_by && (
+                    <span className="text-gray-400">({animeDetail.scored_by.toLocaleString()} users)</span>
+                  )}
+                </div>
+              )}
+              {animeDetail.rank && (
+                <div className="flex items-center gap-2 text-gray-300">
+                  <FontAwesomeIcon icon={faRankingStar} />
+                  <span>Rank #{animeDetail.rank}</span>
+                </div>
+              )}
+              {animeDetail.members && (
+                <div className="flex items-center gap-2 text-gray-300">
+                  <FontAwesomeIcon icon={faUsers} />
+                  <span>{animeDetail.members.toLocaleString()} members</span>
+                </div>
+              )}
+              {animeDetail.favorites && (
+                <div className="flex items-center gap-2 text-gray-300">
+                  <FontAwesomeIcon icon={faHeart} className="text-red-500" />
+                  <span>{animeDetail.favorites.toLocaleString()} favorites</span>
+                </div>
+              )}
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6 text-gray-300">
@@ -312,13 +323,22 @@ export default function AnimeDetail() {
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {characters.map(char => (
               <div key={char.character.mal_id} className="bg-gray-800 rounded-lg p-4">
-                <img 
-                  src={char.character.images.jpg.image_url}
-                  alt={char.character.name}
-                  className="w-full h-48 object-cover rounded-lg mb-2"
-                />
-                <h3 className="text-white font-medium text-sm">{char.character.name}</h3>
-                <p className="text-gray-400 text-xs">{char.role}</p>
+                <div className="aspect-[3/4] mb-2 overflow-hidden rounded-lg">
+                  <img 
+                    src={char.character.images.jpg.image_url}
+                    alt={char.character.name}
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-white font-medium text-sm line-clamp-2">{char.character.name}</h3>
+                  <p className="text-gray-400 text-xs">{char.role}</p>
+                  {char.voice_actors?.length > 0 && (
+                    <p className="text-gray-500 text-xs">
+                      VA: {char.voice_actors[0].person.name}
+                    </p>
+                  )}
+                </div>
               </div>
             ))}
           </div>
