@@ -11,11 +11,13 @@ import {
   faDragon
 } from "@fortawesome/free-solid-svg-icons";
 import Navbar from "@/components/nav/Navbar";
+import LoadingSpinner from "@/components/loading/LoadingSpinner";
 
 // Tipe data untuk anime
 interface Anime {
   mal_id: number;
   title: string;
+  title_english: string | null;
   images: {
     jpg: {
       large_image_url: string;
@@ -61,11 +63,7 @@ export default function Home() {
   }, []);
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   return (
@@ -84,7 +82,7 @@ export default function Home() {
               <div className="relative aspect-[3/4]">
                 <img 
                   src={anime.images.jpg.large_image_url} 
-                  alt={anime.title}
+                  alt={anime.title_english || anime.title}
                   className="w-full h-full object-cover"
                   loading="lazy"
                 />
@@ -95,8 +93,8 @@ export default function Home() {
               </div>
 
               <div className="p-3">
-                <h2 className="text-sm font-bold mb-2 line-clamp-1 text-white">
-                  {anime.title}
+                <h2 className="text-sm font-bold mb-2 line-clamp-2 text-white">
+                  {anime.title_english || anime.title}
                 </h2>
                 
                 {/* Genre Tags */}
@@ -114,19 +112,17 @@ export default function Home() {
                 <div className="flex flex-wrap gap-2 text-xs text-gray-400 mt-auto">
                   <div className="flex items-center gap-1">
                     <FontAwesomeIcon icon={faPlay} className="text-[10px]" />
-                    <span>{anime.episodes || "?"}</span>
+                    <span>Total Episodes: {anime.episodes || "?"}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <FontAwesomeIcon icon={faClock} className="text-[10px]" />
-                    <span>{anime.duration.split(" ")[0]}</span>
+                    <span>Duration: {anime.duration.split(" ")[0]} min</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <FontAwesomeIcon icon={faCalendar} className="text-[10px]" />
-                    <span>
-                      {anime.aired?.prop?.from ? 
-                        `${anime.aired.prop.from.day}/${anime.aired.prop.from.month}/${anime.aired.prop.from.year}` 
-                        : "TBA"}
-                    </span>
+                    <span>Release Date: {anime.aired?.prop?.from ? 
+                      `${anime.aired.prop.from.day}/${anime.aired.prop.from.month}/${anime.aired.prop.from.year}` 
+                      : "TBA"}</span>
                   </div>
                 </div>
               </div>
