@@ -12,7 +12,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import AnimeList from "@/components/AnimeList";
 import HeaderMenu from "@/components/Utilities/HeaderMenu";
-import { ThreeDots } from "react-loading-indicators";
+import { Commet } from "react-loading-indicators";
 
 interface Anime {
   mal_id: number;
@@ -39,42 +39,68 @@ export default function TopAnime() {
   const [animes, setAnimes] = useState<Anime[]>([]);
   const [activeTab, setActiveTab] = useState("all");
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   const tabs = [
-    { id: "all", name: "All", endpoint: "top/anime" },
-    { id: "upcoming", name: "Upcoming", endpoint: "seasons/upcoming" },
-    { id: "airing", name: "Airing", endpoint: "top/anime?filter=airing" },
-    { id: "movie", name: "Movie", endpoint: "top/anime?type=movie" },
-    { id: "tv", name: "TV Series", endpoint: "top/anime?type=tv" },
+    { id: "all", name: "All", endpoint: "top/anime?page=1" },
+    { id: "upcoming", name: "Upcoming", endpoint: "seasons/upcoming?page=1" },
+    { id: "airing", name: "Airing", endpoint: "top/anime?filter=airing&page=1" },
+    { id: "movie", name: "Movie", endpoint: "top/anime?type=movie&page=1" },
+    { id: "tv", name: "TV Series", endpoint: "top/anime?type=tv&page=1" },
   ];
 
-  const fetchAnimes = async (endpoint: string) => {
+  const fetchAnimes = async (endpoint: string, isLoadMore = false, currentPage = page) => {
     try {
-      setLoading(true);
-      const response = await fetch(`https://api.jikan.moe/v4/${endpoint}`);
+      if (!isLoadMore) {
+        setLoading(true);
+      } else {
+        setLoadingMore(true);
+      }
+
+      const pageParam = endpoint.replace("page=1", `page=${currentPage}`);
+      
+      const response = await fetch(`https://api.jikan.moe/v4/${pageParam}`);
       const data = await response.json();
+
+      const uniqueAnimes = new Map();
       
-      const seenIds = new Set();
-      const uniqueAnimes = data.data.filter((anime: Anime) => {
-        if (!seenIds.has(anime.mal_id)) {
-          seenIds.add(anime.mal_id);
-          return true;
+      if (isLoadMore) {
+        animes.forEach(anime => {
+          uniqueAnimes.set(anime.mal_id, anime);
+        });
+      }
+
+      data.data.forEach((anime: Anime) => {
+        if (!uniqueAnimes.has(anime.mal_id)) {
+          uniqueAnimes.set(anime.mal_id, anime);
         }
-        return false;
       });
-      
-      setAnimes(uniqueAnimes);
+
+      const finalAnimes = Array.from(uniqueAnimes.values());
+      setAnimes(finalAnimes);
     } catch (error) {
       console.error("Error fetching anime:", error);
     } finally {
       setLoading(false);
+      setLoadingMore(false);
+    }
+  };
+
+  const handleLoadMore = () => {
+    const nextPage = page + 1;
+    setPage(nextPage);
+    const currentTab = tabs.find(tab => tab.id === activeTab);
+    if (currentTab) {
+      fetchAnimes(currentTab.endpoint, true, nextPage);
     }
   };
 
   useEffect(() => {
     const currentTab = tabs.find(tab => tab.id === activeTab);
     if (currentTab) {
-      fetchAnimes(currentTab.endpoint);
+      setPage(1);
+      fetchAnimes(currentTab.endpoint, false, 1);
     }
   }, [activeTab]);
 
@@ -82,7 +108,6 @@ export default function TopAnime() {
     <div className="min-h-screen bg-gray-900">
       <Navbar />
       <div className="pt-24 px-4 md:px-8 pb-8">
-        {/* Navigation */}
         <div className="flex gap-2 mb-8">
           {tabs.map((tab) => (
             <button
@@ -101,15 +126,30 @@ export default function TopAnime() {
 
         {loading ? (
           <div className="flex justify-center items-center min-h-[50vh]">
-            <ThreeDots
+            <Commet
               color="#3b82f6"
-              size="large"
+              size="medium"
               text=""
               textColor=""
             />
           </div>
         ) : (
-          <AnimeList api={animes} />
+          <>
+            <AnimeList api={animes} />
+            <div className="flex justify-center mt-8">
+              <button
+                onClick={handleLoadMore}
+                disabled={loadingMore}
+                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              >
+                {loadingMore ? (
+                  <Commet color="#ffffff" size="small" text="" textColor="" />
+                ) : (
+                  "Load More"
+                )}
+              </button>
+            </div>
+          </>
         )}
       </div>
     </div>
