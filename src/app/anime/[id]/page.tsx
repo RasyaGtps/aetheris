@@ -21,7 +21,9 @@ import {
   faMicrophone,
   faTheaterMasks,
   faIndustry,
-  faFilm
+  faFilm,
+  faPlayCircle,
+  faCalendarDays
 } from "@fortawesome/free-solid-svg-icons";
 import Navbar from "@/components/nav/Navbar";
 import LoadingSpinner from "@/components/loading/LoadingSpinner";
@@ -359,35 +361,45 @@ export default function AnimeDetail() {
           <h2 className="text-2xl font-bold text-white mb-6">Episodes</h2>
           <div className="bg-gray-800 rounded-lg overflow-hidden">
             {episodes.length > 0 ? (
-              episodes.map(episode => (
+              [...episodes].reverse().map(episode => (
                 <div 
                   key={episode.mal_id}
                   className="p-4 border-b border-gray-700 last:border-0 hover:bg-gray-700 transition-colors"
                 >
-                  <div className="flex justify-between items-center">
+                  <div className="flex justify-between items-start">
                     <div className="flex-1">
                       <h3 className="text-white font-medium flex items-center gap-2">
+                        <FontAwesomeIcon 
+                          icon={faPlayCircle} 
+                          className="text-blue-400 w-5 h-5"
+                        />
                         <span className="text-blue-400">Episode {episode.mal_id}</span>
                         {episode.title}
                       </h3>
                       {episode.title_japanese && (
-                        <p className="text-gray-400 text-sm mt-1">
+                        <p className="text-gray-400 text-sm mt-1 ml-7">
                           {episode.title_japanese}
                           {episode.title_romanji && ` (${episode.title_romanji})`}
                         </p>
                       )}
-                      <p className="text-gray-400 text-sm mt-1">
-                        Aired: {formatDate(episode.aired)}
+                      <p className="text-gray-400 text-sm mt-1 flex items-center gap-2 ml-7">
+                        <FontAwesomeIcon 
+                          icon={faCalendarDays} 
+                          className="text-gray-500 w-4 h-4"
+                        />
+                        {formatDate(episode.aired)}
                       </p>
                       {(episode.filler || episode.recap) && (
-                        <div className="flex gap-2 mt-1">
+                        <div className="flex gap-2 mt-1 ml-7">
                           {episode.filler && (
-                            <span className="text-xs px-2 py-1 bg-yellow-600 text-white rounded">
+                            <span className="text-xs px-2 py-1 bg-yellow-600 text-white rounded flex items-center gap-1">
+                              <FontAwesomeIcon icon={faVideo} className="w-3 h-3" />
                               Filler
                             </span>
                           )}
                           {episode.recap && (
-                            <span className="text-xs px-2 py-1 bg-gray-600 text-white rounded">
+                            <span className="text-xs px-2 py-1 bg-gray-600 text-white rounded flex items-center gap-1">
+                              <FontAwesomeIcon icon={faFilm} className="w-3 h-3" />
                               Recap
                             </span>
                           )}

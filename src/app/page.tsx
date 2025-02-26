@@ -7,7 +7,9 @@ import {
   faCalendar,
   faClock,
   faChevronLeft,
-  faChevronRight
+  faChevronRight,
+  faSearch,
+  faXmark
 } from "@fortawesome/free-solid-svg-icons";
 import Navbar from "@/components/nav/Navbar";
 import LoadingSpinner from "@/components/loading/LoadingSpinner";
@@ -71,6 +73,9 @@ export default function Home() {
   const [dragStartTime, setDragStartTime] = useState(0);
   const [moveCount, setMoveCount] = useState(0);
   const [autoScroll, setAutoScroll] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<Anime[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
 
   const fetchFeaturedAnime = async () => {
     try {
@@ -84,16 +89,49 @@ export default function Home() {
 
   const fetchOngoingAnime = async () => {
     try {
-      const response = await fetch('https://api.jikan.moe/v4/seasons/now');
+      const response = await fetch('https://api.jikan.moe/v4/seasons/now?page=1');
       const data = await response.json();
       setOngoingAnime(data.data);
       setLoading(false);
+      setAutoScroll(true);
     } catch (error) {
       console.error("Error fetching ongoing anime:", error);
+      setLoading(false);
     }
   };
 
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) return;
+
+    setIsSearching(true);
+    setLoading(true);
+
+    try {
+      const response = await fetch(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(searchQuery)}&sfw=true&limit=24`);
+      const data = await response.json();
+      
+      // Filter hasil pencarian untuk menghilangkan duplikasi
+      const uniqueResults = data.data.filter((anime: Anime, index: number, self: Anime[]) =>
+        index === self.findIndex((a) => a.mal_id === anime.mal_id)
+      );
+      
+      setSearchResults(uniqueResults);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error searching anime:", error);
+      setLoading(false);
+    }
+  };
+
+  const handleClearSearch = () => {
+    setSearchQuery("");
+    setIsSearching(false);
+    setSearchResults([]);
+  };
+
   useEffect(() => {
+    setAutoScroll(true);
     fetchFeaturedAnime();
     fetchOngoingAnime();
   }, []);
@@ -101,7 +139,7 @@ export default function Home() {
   useEffect(() => {
     let scrollInterval: NodeJS.Timeout;
     
-    if (autoScroll && sliderRef.current) {
+    if (autoScroll && !loading && ongoingAnime.length > 0 && sliderRef.current) {
       scrollInterval = setInterval(() => {
         if (sliderRef.current) {
           const isAtEnd = 
@@ -122,7 +160,7 @@ export default function Home() {
         clearInterval(scrollInterval);
       }
     };
-  }, [autoScroll]);
+  }, [autoScroll, loading, ongoingAnime]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     setAutoScroll(false);
@@ -223,51 +261,83 @@ export default function Home() {
           </div>
         )}
 
-        {/* Ongoing Anime Section - Updated */}
+        {/* Ongoing Anime Section with Search */}
         <div className="container mx-auto px-4 py-8">
-          <h2 className="text-2xl font-bold text-white mb-6">Ongoing Anime</h2>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-white">
+              {isSearching ? 'Search Results' : 'Ongoing Anime'}
+            </h2>
+            
+            {/* Search Form */}
+            <form 
+              onSubmit={handleSearch}
+              className="flex gap-2"
+            >
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search anime..."
+                  className="bg-gray-800 text-white px-4 py-2 pr-10 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-[300px]"
+                />
+                <button 
+                  type="button"
+                  onClick={isSearching ? handleClearSearch : handleSearch}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                >
+                  <FontAwesomeIcon 
+                    icon={isSearching ? faXmark : faSearch} 
+                    className={`w-4 h-4 ${isSearching ? 'hover:text-red-500' : ''}`}
+                  />
+                </button>
+              </div>
+            </form>
+          </div>
+
+          {/* Anime Grid/Slider */}
           <div className="relative group">
-            {/* Tombol Previous */}
-            <button 
-              onClick={() => handleScroll('left')}
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-black/50 hover:bg-black/80 text-white p-3 rounded-r-lg opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-              style={{ transform: 'translateY(-50%)' }}
-            >
-              <FontAwesomeIcon icon={faChevronLeft} className="w-5 h-5" />
-            </button>
+            {!isSearching && (
+              <>
+                {/* Navigation buttons (only show for ongoing anime) */}
+                <button 
+                  onClick={() => handleScroll('left')}
+                  className="absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-black/50 hover:bg-black/80 text-white p-3 rounded-r-lg opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                >
+                  <FontAwesomeIcon icon={faChevronLeft} className="w-5 h-5" />
+                </button>
+                <button 
+                  onClick={() => handleScroll('right')}
+                  className="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-black/50 hover:bg-black/80 text-white p-3 rounded-l-lg opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                >
+                  <FontAwesomeIcon icon={faChevronRight} className="w-5 h-5" />
+                </button>
+              </>
+            )}
 
-            {/* Tombol Next */}
-            <button 
-              onClick={() => handleScroll('right')}
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-black/50 hover:bg-black/80 text-white p-3 rounded-l-lg opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-              style={{ transform: 'translateY(-50%)' }}
-            >
-              <FontAwesomeIcon icon={faChevronRight} className="w-5 h-5" />
-            </button>
-
-            {/* Slider content */}
+            {/* Content Container */}
             <div 
               ref={sliderRef}
-              className="w-full overflow-x-auto cursor-grab active:cursor-grabbing select-none scrollbar-hide relative"
+              className={`w-full ${!isSearching ? 'overflow-x-auto cursor-grab active:cursor-grabbing' : ''} select-none scrollbar-hide relative`}
               style={{ 
                 scrollbarWidth: 'none',
                 msOverflowStyle: 'none'
               }}
-              onMouseDown={handleMouseDown}
-              onMouseLeave={() => {
-                setIsDragging(false);
-                setIsHovered(false);
-              }}
-              onMouseEnter={() => setIsHovered(true)}
-              onMouseUp={handleMouseUp}
-              onMouseMove={handleMouseMove}
+              {...(!isSearching ? {
+                onMouseDown: handleMouseDown,
+                onMouseLeave: handleMouseLeave,
+                onMouseEnter: () => setIsHovered(true),
+                onMouseUp: handleMouseUp,
+                onMouseMove: handleMouseMove,
+              } : {})}
             >
-              <div className="flex gap-4 pb-4" style={{ minWidth: "max-content" }}>
-                {ongoingAnime.map((anime) => (
+              <div className={`${isSearching ? 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4' : 'flex gap-4 pb-4'}`} 
+                   style={!isSearching ? { minWidth: "max-content" } : undefined}>
+                {(isSearching ? searchResults : ongoingAnime).map((anime, index) => (
                   <Link 
                     href={`/anime/${anime.mal_id}`} 
-                    key={anime.mal_id}
-                    className="w-[250px] flex-shrink-0"
+                    key={`${anime.mal_id}-${index}`}
+                    className={`${isSearching ? '' : 'w-[250px] flex-shrink-0'}`}
                     onClick={(e) => {
                       if (isDragging) {
                         e.preventDefault();
@@ -295,7 +365,7 @@ export default function Home() {
                       </div>
                       <div className="p-3 space-y-2">
                         <h3 className="text-white text-sm font-medium line-clamp-2">
-                          {anime.title}
+                          {anime.title_english || anime.title}
                         </h3>
                         <div className="flex flex-col gap-1 text-xs text-gray-400">
                           <div className="flex items-center gap-1">
