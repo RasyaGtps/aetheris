@@ -17,7 +17,11 @@ import {
   faCirclePlay,
   faMusic,
   faCompactDisc,
-  faBuilding
+  faBuilding,
+  faMicrophone,
+  faTheaterMasks,
+  faIndustry,
+  faFilm
 } from "@fortawesome/free-solid-svg-icons";
 import Navbar from "@/components/nav/Navbar";
 import LoadingSpinner from "@/components/loading/LoadingSpinner";
@@ -196,53 +200,53 @@ export default function AnimeDetail() {
                   <FontAwesomeIcon icon={faStar} className="text-yellow-400" />
                   <span className="text-white text-xl font-bold">{animeDetail.score}</span>
                   {animeDetail.scored_by && (
-                    <span className="text-gray-400">({animeDetail.scored_by.toLocaleString()} users)</span>
+                    <span className="text-white">({animeDetail.scored_by.toLocaleString()} users)</span>
                   )}
                 </div>
               )}
               {animeDetail.rank && (
-                <div className="flex items-center gap-2 text-gray-300">
-                  <FontAwesomeIcon icon={faRankingStar} />
+                <div className="flex items-center gap-2 text-white">
+                  <FontAwesomeIcon icon={faRankingStar} className="text-orange-400" />
                   <span>Rank #{animeDetail.rank}</span>
                 </div>
               )}
               {animeDetail.members && (
-                <div className="flex items-center gap-2 text-gray-300">
-                  <FontAwesomeIcon icon={faUsers} />
+                <div className="flex items-center gap-2 text-white">
+                  <FontAwesomeIcon icon={faUsers} className="text-blue-400" />
                   <span>{animeDetail.members.toLocaleString()} members</span>
                 </div>
               )}
               {animeDetail.favorites && (
-                <div className="flex items-center gap-2 text-gray-300">
+                <div className="flex items-center gap-2 text-white">
                   <FontAwesomeIcon icon={faHeart} className="text-red-500" />
                   <span>{animeDetail.favorites.toLocaleString()} favorites</span>
                 </div>
               )}
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6 text-gray-300">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6 text-white">
               <div className="flex items-center gap-2">
-                <FontAwesomeIcon icon={faTelevision} />
+                <FontAwesomeIcon icon={faTelevision} className="text-purple-400" />
                 <span>Type: {animeDetail.type}</span>
               </div>
               <div className="flex items-center gap-2">
-                <FontAwesomeIcon icon={faBook} />
+                <FontAwesomeIcon icon={faBook} className="text-green-400" />
                 <span>Source: {animeDetail.source}</span>
               </div>
               <div className="flex items-center gap-2">
-                <FontAwesomeIcon icon={faPlay} />
+                <FontAwesomeIcon icon={faPlay} className="text-cyan-400" />
                 <span>Episodes: {animeDetail.episodes}</span>
               </div>
               <div className="flex items-center gap-2">
-                <FontAwesomeIcon icon={faClock} />
+                <FontAwesomeIcon icon={faClock} className="text-amber-400" />
                 <span>Duration: {animeDetail.duration}</span>
               </div>
               <div className="flex items-center gap-2">
-                <FontAwesomeIcon icon={faCalendar} />
+                <FontAwesomeIcon icon={faCalendar} className="text-pink-400" />
                 <span>Season: {animeDetail.season} {animeDetail.year}</span>
               </div>
               <div className="flex items-center gap-2">
-                <FontAwesomeIcon icon={faGlobe} />
+                <FontAwesomeIcon icon={faGlobe} className="text-teal-400" />
                 <span>Status: {animeDetail.status}</span>
               </div>
             </div>
@@ -250,14 +254,14 @@ export default function AnimeDetail() {
             {/* Studios & Producers */}
             <div className="mb-6">
               <div className="flex items-center gap-2 mb-2">
-                <FontAwesomeIcon icon={faBuilding} className="text-gray-300" />
+                <FontAwesomeIcon icon={faFilm} className="text-indigo-400" />
                 <h3 className="text-white font-bold">Studios:</h3>
-                <span className="text-gray-300">{animeDetail.studios.map(s => s.name).join(', ')}</span>
+                <span className="text-white">{animeDetail.studios.map(s => s.name).join(', ')}</span>
               </div>
               <div className="flex items-center gap-2">
-                <FontAwesomeIcon icon={faBuilding} className="text-gray-300" />
+                <FontAwesomeIcon icon={faIndustry} className="text-rose-400" />
                 <h3 className="text-white font-bold">Producers:</h3>
-                <span className="text-gray-300">{animeDetail.producers.map(p => p.name).join(', ')}</span>
+                <span className="text-white">{animeDetail.producers.map(p => p.name).join(', ')}</span>
               </div>
             </div>
 
@@ -266,22 +270,22 @@ export default function AnimeDetail() {
               <div className="mb-6">
                 {animeDetail.theme.openings?.length > 0 && (
                   <div className="flex items-start gap-2 mb-2">
-                    <FontAwesomeIcon icon={faMusic} className="text-gray-300 mt-1" />
+                    <FontAwesomeIcon icon={faMusic} className="text-violet-400 mt-1" />
                     <div>
                       <h3 className="text-white font-bold">Opening Theme:</h3>
                       {animeDetail.theme.openings.map((op, idx) => (
-                        <p key={idx} className="text-gray-300">{op}</p>
+                        <p key={idx} className="text-white">{op}</p>
                       ))}
                     </div>
                   </div>
                 )}
                 {animeDetail.theme.endings?.length > 0 && (
                   <div className="flex items-start gap-2">
-                    <FontAwesomeIcon icon={faCompactDisc} className="text-gray-300 mt-1" />
+                    <FontAwesomeIcon icon={faCompactDisc} className="text-fuchsia-400 mt-1" />
                     <div>
                       <h3 className="text-white font-bold">Ending Theme:</h3>
                       {animeDetail.theme.endings.map((ed, idx) => (
-                        <p key={idx} className="text-gray-300">{ed}</p>
+                        <p key={idx} className="text-white">{ed}</p>
                       ))}
                     </div>
                   </div>
@@ -330,13 +334,19 @@ export default function AnimeDetail() {
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                   />
                 </div>
-                <div className="space-y-1">
-                  <h3 className="text-white font-medium text-sm line-clamp-2">{char.character.name}</h3>
-                  <p className="text-gray-400 text-xs">{char.role}</p>
+                <div className="space-y-2">
+                  <h3 className="text-white font-medium text-sm line-clamp-2">
+                    {char.character.name}
+                  </h3>
+                  <div className="flex items-center gap-1 text-white text-xs">
+                    <FontAwesomeIcon icon={faTheaterMasks} className="text-emerald-400" />
+                    <span>{char.role}</span>
+                  </div>
                   {char.voice_actors?.length > 0 && (
-                    <p className="text-gray-500 text-xs">
-                      VA: {char.voice_actors[0].person.name}
-                    </p>
+                    <div className="flex items-center gap-1 text-white text-xs">
+                      <FontAwesomeIcon icon={faMicrophone} className="text-red-400" />
+                      <span>{char.voice_actors[0].person.name}</span>
+                    </div>
                   )}
                 </div>
               </div>
