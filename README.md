@@ -19,6 +19,11 @@
 - 📱 **Responsive Design** - Seamless experience across all devices
 - ⚡ **Fast Performance** - Optimized for quick loading and smooth navigation
 
+## ⚠️ Limitations
+
+- 🎬 **Video Playback** - Due to API limitations, direct video playback is not available as the Jikan API does not provide episode streaming URLs
+- The platform focuses on anime discovery and information rather than content streaming
+
 ## 🚀 Getting Started
 
 ### Prerequisites
@@ -102,6 +107,21 @@ Aetheris follows a modern, minimalist design approach with:
 - **Icons**: Font Awesome
 - **State Management**: React Hooks
 - **Routing**: Next.js App Router
+- **API**: Jikan API (MyAnimeList unofficial API)
+
+## 📝 API Integration
+
+The application uses the Jikan API which provides:
+- Comprehensive anime information
+- Seasonal anime listings
+- Ratings and reviews
+- Genre classifications
+- Series metadata
+
+However, the API does not provide:
+- Direct streaming links
+- Episode video content
+- Licensed content access
 
 ## 📱 Responsive Design
 
@@ -139,8 +159,9 @@ npm run lint     # Run ESLint
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## �� Acknowledgments
 
+- [Jikan API](https://jikan.moe/) for providing anime data
 - Design inspiration from modern web applications
 - Community feedback and contributions
 - Open-source software community
