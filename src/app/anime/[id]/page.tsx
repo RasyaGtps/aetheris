@@ -23,10 +23,29 @@ import {
   faIndustry,
   faFilm,
   faPlayCircle,
-  faCalendarDays
+  faCalendarDays,
+  faDragon,
+  faGun,
+  faFaceSmile,
+  faPerson,
+  faWandSparkles,
+  faSkull,
+  faRobot,
+  faUserNinja,
+  faMagnifyingGlass,
+  faVolleyball,
+  faBaby,
+  faGhost,
+  faUserSecret,
+  faCar,
+  faFighter,
+  faSchool,
+  faSpaceShuttle,
+  faGamepad
 } from "@fortawesome/free-solid-svg-icons";
 import Navbar from "@/components/nav/Navbar";
 import LoadingSpinner from "@/components/loading/LoadingSpinner";
+import Link from "next/link";
 
 interface AnimeDetail {
   mal_id: number;
@@ -112,6 +131,34 @@ interface Episode {
   filler: boolean;
   recap: boolean;
 }
+
+const getGenreInfo = (genreName: string) => {
+  const genreMap: { [key: string]: { icon: any; color: string } } = {
+    'Action': { icon: faGun, color: 'text-red-400' },
+    'Adventure': { icon: faUserNinja, color: 'text-green-400' },
+    'Comedy': { icon: faFaceSmile, color: 'text-yellow-400' },
+    'Drama': { icon: faTheaterMasks, color: 'text-purple-400' },
+    'Fantasy': { icon: faDragon, color: 'text-blue-400' },
+    'Horror': { icon: faSkull, color: 'text-gray-400' },
+    'Mystery': { icon: faMagnifyingGlass, color: 'text-indigo-400' },
+    'Romance': { icon: faHeart, color: 'text-pink-400' },
+    'Sci-Fi': { icon: faRobot, color: 'text-cyan-400' },
+    'Slice of Life': { icon: faPerson, color: 'text-orange-400' },
+    'Sports': { icon: faVolleyball, color: 'text-emerald-400' },
+    'Supernatural': { icon: faWandSparkles, color: 'text-violet-400' },
+    'School': { icon: faSchool, color: 'text-teal-400' },
+    'Music': { icon: faMusic, color: 'text-rose-400' },
+    'Kids': { icon: faBaby, color: 'text-lime-400' },
+    'Demons': { icon: faGhost, color: 'text-amber-400' },
+    'Thriller': { icon: faUserSecret, color: 'text-red-600' },
+    'Cars': { icon: faCar, color: 'text-blue-600' },
+    'Martial Arts': { icon: faFighter, color: 'text-orange-600' },
+    'Space': { icon: faSpaceShuttle, color: 'text-purple-600' },
+    'Game': { icon: faGamepad, color: 'text-green-600' },
+  };
+
+  return genreMap[genreName] || { icon: faTheaterMasks, color: 'text-gray-400' };
+};
 
 export default function AnimeDetail() {
   const params = useParams();
@@ -226,6 +273,25 @@ export default function AnimeDetail() {
               )}
             </div>
 
+            {/* Genres Section */}
+            <div className="flex flex-wrap gap-3 mb-6">
+              {animeDetail.genres.map((genre) => {
+                const { icon, color } = getGenreInfo(genre.name);
+                return (
+                  <div
+                    key={genre.mal_id}
+                    className="flex items-center gap-2 bg-gray-800 px-4 py-2 rounded-full"
+                  >
+                    <FontAwesomeIcon 
+                      icon={icon} 
+                      className={`w-4 h-4 ${color}`}
+                    />
+                    <span className="text-white text-sm">{genre.name}</span>
+                  </div>
+                );
+              })}
+            </div>
+
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6 text-white">
               <div className="flex items-center gap-2">
                 <FontAwesomeIcon icon={faTelevision} className="text-purple-400" />
@@ -328,12 +394,16 @@ export default function AnimeDetail() {
           <h2 className="text-2xl font-bold text-white mb-6">Characters</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {characters.map(char => (
-              <div key={char.character.mal_id} className="bg-gray-800 rounded-lg p-4">
+              <Link 
+                href={`/character/${char.character.mal_id}`}
+                key={char.character.mal_id} 
+                className="bg-gray-800 rounded-lg p-4 hover:scale-105 transition-transform duration-300"
+              >
                 <div className="aspect-[3/4] mb-2 overflow-hidden rounded-lg">
                   <img 
                     src={char.character.images.jpg.image_url}
                     alt={char.character.name}
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                    className="w-full h-full object-cover"
                   />
                 </div>
                 <div className="space-y-2">
@@ -351,7 +421,7 @@ export default function AnimeDetail() {
                     </div>
                   )}
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

@@ -9,7 +9,28 @@ import {
   faChevronLeft,
   faChevronRight,
   faSearch,
-  faXmark
+  faXmark,
+  faTheaterMasks,
+  faDragon,
+  faGun,
+  faHeart,
+  faSchool,
+  faFaceSmile,
+  faPerson,
+  faWandSparkles,
+  faSkull,
+  faRobot,
+  faUserNinja,
+  faMagnifyingGlass,
+  faVolleyball,
+  faMusic,
+  faBaby,
+  faGhost,
+  faUserSecret,
+  faCar,
+  faFighter,
+  faSpaceShuttle,
+  faGamepad,
 } from "@fortawesome/free-solid-svg-icons";
 import Navbar from "@/components/nav/Navbar";
 import LoadingSpinner from "@/components/loading/LoadingSpinner";
@@ -171,12 +192,12 @@ export default function Home() {
 
   const handleMouseLeave = () => {
     setIsDragging(false);
-    setTimeout(() => setAutoScroll(true), 1000);
+    setTimeout(() => setAutoScroll(true), 300);
   };
 
   const handleMouseUp = () => {
     setIsDragging(false);
-    setTimeout(() => setAutoScroll(true), 1000);
+    setTimeout(() => setAutoScroll(true), 300);
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
@@ -205,7 +226,7 @@ export default function Home() {
       behavior: 'smooth'
     });
 
-    setTimeout(() => setAutoScroll(true), 2000);
+    setTimeout(() => setAutoScroll(true), 300);
   };
 
   if (loading) {
@@ -347,7 +368,7 @@ export default function Home() {
                     <div 
                       className="bg-gray-800 rounded-lg overflow-hidden hover:scale-105 transition-transform duration-300"
                       onMouseEnter={() => setAutoScroll(false)}
-                      onMouseLeave={() => setTimeout(() => setAutoScroll(true), 1000)}
+                      onMouseLeave={() => setTimeout(() => setAutoScroll(true), 300)}
                     >
                       <div className="relative">
                         <div className="aspect-[3/4]">
@@ -375,6 +396,16 @@ export default function Home() {
                           <div className="flex items-center gap-1">
                             <FontAwesomeIcon icon={faCalendar} className="w-4" />
                             <span>{new Date(anime.aired.from).getFullYear()}</span>
+                          </div>
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            {anime.genres.slice(0, 3).map((genre) => (
+                              <div
+                                key={genre.mal_id}
+                                className="bg-blue-600 px-2 py-1 rounded-full text-white text-xs"
+                              >
+                                {genre.name}
+                              </div>
+                            ))}
                           </div>
                         </div>
                       </div>
